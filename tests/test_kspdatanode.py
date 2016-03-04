@@ -1,10 +1,16 @@
 import unittest
+
 from ..kspdatanode import KSPDataNode
 
 
 class TestKSPDataNode(unittest.TestCase):
+    def test__init(self):
+        node = KSPDataNode('a name')
+        assert node.name == 'a name'
+        assert node.parent is None
+
     def test__add_value(self):
-        node = KSPDataNode()
+        node = KSPDataNode('GAME')
 
         node.add_value('foo', 'bar')
 
@@ -14,7 +20,7 @@ class TestKSPDataNode(unittest.TestCase):
         assert value.value == 'bar'
 
     def test__values_retain_order(self):
-        node = KSPDataNode()
+        node = KSPDataNode('GAME')
 
         node.add_value('first', 'foo')
         node.add_value('second', 'bar')
@@ -25,9 +31,15 @@ class TestKSPDataNode(unittest.TestCase):
         assert node.values[2].name == 'third'
 
     def test__add_node(self):
-        node = KSPDataNode()
-        child_node = KSPDataNode()
+        node = KSPDataNode('node')
+        child_node = KSPDataNode('child_node')
 
         node.add_node(child_node)
 
         assert node.nodes[0] is child_node
+
+    def test__add_node_sets_parent_on_child(self):
+        node = KSPDataNode('node')
+        child = KSPDataNode('child')
+        node.add_node(child)
+        assert child.parent is node

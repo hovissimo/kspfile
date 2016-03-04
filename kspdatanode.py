@@ -25,9 +25,11 @@ NodeValue = namedtuple('NodeValue', ['name', 'value'])
 
 class KSPDataNode():
     '''A representation of a data node in a KSP file.'''
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.values = ()
         self.nodes = ()
+        self.parent = None
         pass
 
     def add_value(self, name, value):
@@ -42,3 +44,5 @@ class KSPDataNode():
 
         Order of added nodes should be maintained.'''
         self.nodes += (child_node, )
+        child_node.parent = self
+        return child_node
