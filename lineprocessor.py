@@ -26,14 +26,31 @@ class LineProcessor():
                 handler(match)
                 break
         else:
-            raise UnexpectedLineError(
-                '"{}" could not be matched with a rule'.format(line)
-            )
+            raise UnexpectedLineError('encountered a line that did not match any rules', line)
 
     def process_lines(self, lines):
-        for line in lines:
-            self.dispatch_line(line)
+        for i, line in enumerate(lines):
+            try:
+                self.dispatch_line(line)
+            except UnexpectedLineError as e:
+                e.line_number = i+1
+                print('''Encountered a line that did not match any rules.
+Line number: {}
+Line: "{}"
+                      '''.format(e.line_number, e.line))
+                raise
 
 
 class UnexpectedLineError(ValueError):
-    pass
+    def __init__(self, message=None, line=None, *args, **kwargs):
+        super().__init__(message, *args, **kwargs)
+        self.line = line
+
+    def __repr__(self):
+        class_name = type(self).__name__
+        return '{}: Line {} ("{}") did not match any rules.'.format(class_name,
+                                                                    self.line_number,
+                                                                    self.line)
+
+    line_number = None
+    line = None

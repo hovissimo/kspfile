@@ -8,6 +8,7 @@ class TestLineProcessor(unittest.TestCase):
     def test__init_takes_rules(self):
         rules = [('a','b')]
         lp = LineProcessor(rules)
+        self.assertEqual(rules, lp.rules, 'The LineProcessor instance should have the rules we initialized with')
         assert lp.rules == rules
 
     def test__dispatch_line(self):
@@ -32,8 +33,9 @@ class TestLineProcessor(unittest.TestCase):
     def test__dispatch_line_raises_if_no_match(self):
         lp = LineProcessor([])
 
-        with self.assertRaises(UnexpectedLineError):
+        with self.assertRaises(UnexpectedLineError) as cm:
             lp.process_lines(['abc'])
+        self.assertIsInstance(cm.exception.line_number, int, 'The exception should have an integer line number')
 
     def test__process_lines(self):
         letters_handler = MagicMock(name='letters_handler')
@@ -48,3 +50,17 @@ class TestLineProcessor(unittest.TestCase):
 
         assert letters_handler.call_count == 2
         assert mixed_handler.call_count == 2
+
+
+class TestUnexpectedLineError(unittest.TestCase):
+    def test__repr_shows_line_and_number(self):
+        line = 'abcdef12345'
+        e = UnexpectedLineError("I'm the message", line)
+        e.line_number = 99
+
+        r = repr(e)
+
+        self.assertIn(line, r)
+        self.assertIn('99', r)
+
+

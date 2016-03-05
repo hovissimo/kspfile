@@ -71,3 +71,12 @@ class TestKSPDataReader(unittest.TestCase):
         assert reader.tree.values[1].value == 'hovis'
         assert reader.tree.values[2].name == '0'
         assert reader.tree.values[2].value == 'Flight,Kerbin'
+
+    def test__KSPDataReader_raises_on_bad_open_brace(self):
+        reader = KSPDataReader()
+        with self.assertRaises(AssertionError):
+            reader.process_lines([
+                                  'foo = bar',
+                                  '{',  # open braces should only follow node names!
+                                  '}',
+                                  ])

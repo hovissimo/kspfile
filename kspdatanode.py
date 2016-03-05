@@ -32,6 +32,9 @@ class KSPDataNode():
         self.parent = None
         pass
 
+    def __repr__(self):
+        return "<KSPDataNode '{}' id:{:#x}".format(self.name, id(self))
+
     def add_value(self, name, value):
         '''Add a named value to this node.
 
